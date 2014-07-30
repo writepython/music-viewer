@@ -8,9 +8,13 @@
 <h1>Music Viewer</h1>
 <div ng-controller="MusicCtrl">
 
-<h4>Search for music: <input ng-model="search"></h4>
+Enter your Last.fm username and start scrobbling: <input type="text" ng-model="username" ng-change="sayHello()">
+<hr>
+<h1>:{{greeting}}</h1>
 
 <img src="{{image_src}}" alt="Song Image" width="600" height="600">
+<h1>:{{u}}</h1>
+<h1>:{{username}}</h1>
 <h1>{{track_name}}</h1>
 <h2>by {{track_artist}}</h2>
 <h2>from {{track_album}}</h2>
@@ -20,7 +24,7 @@
 </div>
 
 
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.19/angular.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.21/angular.min.js"></script>
 <script type="text/javascript" src="main.js"></script>
 
 <script async src="http://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
