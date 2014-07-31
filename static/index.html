@@ -8,7 +8,7 @@
 <body>
 <div ng-controller="MusicCtrl">
 
-<h3>Enter your Last.fm username: <input type="text" ng-model="username" ng-change="updateUsername()"></h3>
+<h3>Enter your Last.fm username. This app will update automatically: <input type="text" ng-model="username" ng-change="updateUsername()"><span ng-if="user_name">&nbsp;&nbsp;&nbsp;Hello {{user_name}}</span></h3>
 
 <div class="row">
 
@@ -17,9 +17,12 @@
 </div>
 
 <div class="col-xs-6 col-md-4">
+
 <h2>{{track_name}}</h2>
 <h2>by {{track_artist}}</h2>
 <h2>from {{track_album}}</h2>
+<h3>status = {{status}}</h3>
+<h3>local time = {{time}}</h3>
 </div>
 
 </div>

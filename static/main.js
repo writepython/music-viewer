@@ -1,7 +1,8 @@
 var musicApp = angular.module( 'musicApp', [] );
 
-musicApp.controller( 'MusicCtrl', ['$scope', '$http', '$templateCache', function($scope, $http, $templateCache) {
+musicApp.controller( 'MusicCtrl', ['$scope', '$http', '$timeout', function($scope, $http, $timeout) {
 
+$scope.user_name = ''
 $scope.track_name = 'Song'
 $scope.track_artist = 'Artist'
 $scope.track_album = 'Album'
@@ -33,28 +34,46 @@ function setImageSourceFromArray(images) {
     }
 };
 
-function getLastfmData() {
-    var recent_tracks_url_template = 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&api_key=d44fcea4e2a564b4986245ed24796ca3&limit=1&format=json&user=';
+function getUserInfo() {
+    var user_info_url_template = 'http://ws.audioscrobbler.com/2.0/?method=user.getinfo&api_key=d44fcea4e2a564b4986245ed24796ca3&format=json&user=';
+    var username_trimmed = $scope.username.trim()
+    var user_info_url = user_info_url_template + username_trimmed
+    $http({method: 'GET', url: user_info_url}).
+	success(function(data, status) {
+	    var realname = data.user.realname;
+	    var name = data.user.name;
+	    if (realname) { $scope.user_name = realname }
+	    else if (name) { $scope.user_name = name }
+	    else { $scope.user_name = $scope.username }
+	});
+};
 
+function getLastfmData() {
+    var recent_tracks_url_template = 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&api_key=d44fcea4e2a564b4986245ed24796ca3&limit=2&format=json&user=';
     var username_trimmed = $scope.username.trim()
     var recent_tracks_url = recent_tracks_url_template + username_trimmed
     $http({method: 'GET', url: recent_tracks_url}).
 	success(function(data, status) {
-	    var last_played = data.recenttracks.track;
+            $scope.status = status;
+            $scope.time = new Date().toLocaleString();
+	    var last_played = data.recenttracks.track[0];
 	    $scope.track_name = last_played.name;
 	    $scope.track_artist = last_played.artist["#text"];
 	    $scope.track_album = last_played.album["#text"];
 	    var images = last_played.image;
 	    setImageSourceFromArray(images);
+	    $timeout(getLastfmData, 10000);
 	}).
         error(function(data, status) {
             $scope.data = data || "Request failed";
             $scope.status = status;
+            $scope.time = new Date().toLocaleString();
 	});
 };
 
 $scope.updateUsername = function() {
     getLastfmData();
+    getUserInfo();
 };
 
 }]);
