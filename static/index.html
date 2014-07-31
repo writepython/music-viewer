@@ -5,21 +5,23 @@
 <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 </head>
 <body>
-<h1>Music Viewer</h1>
 <div ng-controller="MusicCtrl">
 
-Enter your Last.fm username and start scrobbling: <input type="text" ng-model="username" ng-change="sayHello()">
-<hr>
-<h1>:{{greeting}}</h1>
+<h3>Enter your Last.fm username: <input type="text" ng-model="username" ng-change="updateUsername()"></h3>
 
-<img src="{{image_src}}" alt="Song Image" width="600" height="600">
-<h1>:{{u}}</h1>
-<h1>:{{username}}</h1>
-<h1>{{track_name}}</h1>
+<div class="row">
+
+<div class="col-xs-12 col-md-8">
+<img src="{{image_src}}" width="900" height="900">
+</div>
+
+<div class="col-xs-6 col-md-4">
+<h2>{{track_name}}</h2>
 <h2>by {{track_artist}}</h2>
 <h2>from {{track_album}}</h2>
-<h2>by {{data}}</h2>
-<h2>from {{status}}</h2>
+</div>
+
+</div>
 
 </div>
 
