@@ -5,6 +5,7 @@ musicApp.controller( 'MusicCtrl', ['$scope', '$http', '$templateCache', function
 $scope.track_name = 'Song'
 $scope.track_artist = 'Artist'
 $scope.track_album = 'Album'
+$scope.image_src = 'placeholder.jpg'
 
 function setImageSourceFromArray(images) {
     var image_large = '';
@@ -33,16 +34,17 @@ function setImageSourceFromArray(images) {
 };
 
 function getLastfmData() {
-    $scope.image_src = ''
-    var recent_tracks_url_template = 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&api_key=d44fcea4e2a564b4986245ed24796ca3&format=json&user=';
+    var recent_tracks_url_template = 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&api_key=d44fcea4e2a564b4986245ed24796ca3&limit=1&format=json&user=';
 
     var username_trimmed = $scope.username.trim()
     var recent_tracks_url = recent_tracks_url_template + username_trimmed
     $http({method: 'GET', url: recent_tracks_url}).
 	success(function(data, status) {
-            //$scope.status = status;
-            //$scope.data = data;
-	    var images = data.recenttracks.track[0].image;
+	    var last_played = data.recenttracks.track;
+	    $scope.track_name = last_played.name;
+	    $scope.track_artist = last_played.artist["#text"];
+	    $scope.track_album = last_played.album["#text"];
+	    var images = last_played.image;
 	    setImageSourceFromArray(images);
 	}).
         error(function(data, status) {
