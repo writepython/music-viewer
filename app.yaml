@@ -1,5 +1,5 @@
 application: party-music
-version: 1
+version: 2
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -11,3 +11,6 @@ handlers:
 - url: /main.js
   static_files: static/main.js
   upload: static/main.js
+- url: /placeholder.jpg
+  static_files: static/placeholder.jpg
+  upload: static/placeholder.jpg
