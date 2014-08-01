@@ -11,9 +11,10 @@ else {
     $scope.track_artist = 'Artist'
     $scope.track_album = 'Album'
     $scope.image_src = 'placeholder.jpg'
+    $scope.image_title = ''
 }
 
-function setImageSourceFromArray(images) {
+function getBestImageFromArray(images) {
     var image_large = '';
     var image_medium = '';
     var image_small = '';
@@ -23,20 +24,16 @@ function setImageSourceFromArray(images) {
 	var size = current_image.size;
 	var image_url = current_image["#text"];
 	if (image_url) {
-	    if (size == "extralarge") {
-		$scope.image_src = image_url;
-		break;
-	    }
+	    if (size == "extralarge") { return image_url }
 	    else if (size == "large") { image_large = image_url }
 	    else if (size == "medium") { image_medium = image_url }
 	    else if (size == "small") { image_small = image_url }
 	}
     }  
-    if ( !($scope.image_src) ) {
-	if (image_large) { $scope.image_src = image_large } 
-	else if (image_medium) { $scope.image_src = image_medium } 
-	else if (image_small) { $scope.image_src = image_small } 
-    }
+    if (image_large) { return image_large } 
+    else if (image_medium) { return image_medium } 
+    else if (image_small) { return image_small } 
+    return false;
 };
 
 function getLastfmUserInfo() {
@@ -59,7 +56,7 @@ function getLastfmUserInfo() {
 };
 
 function getLastfmData() {
-    var recent_tracks_url_template = 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&api_key=d44fcea4e2a564b4986245ed24796ca3&limit=2&format=json&user=';
+    var recent_tracks_url_template = 'http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&api_key=d44fcea4e2a564b4986245ed24796ca3&limit=2&extended=1&format=json&user=';
     var username_trimmed = $scope.username.trim()
     var recent_tracks_url = recent_tracks_url_template + username_trimmed
     $http({method: 'GET', url: recent_tracks_url}).
@@ -68,10 +65,26 @@ function getLastfmData() {
             $scope.time = new Date().toLocaleString();
 	    var last_played = data.recenttracks.track[0];
 	    $scope.track_name = last_played.name;
-	    $scope.track_artist = last_played.artist["#text"];
+	    $scope.track_artist = last_played.artist.name;
 	    $scope.track_album = last_played.album["#text"] || "Unknown";
-	    var images = last_played.image;
-	    setImageSourceFromArray(images);
+	    var images = last_played.image; // Try track images first.
+	    var image_source = getBestImageFromArray(images);
+	    if (image_source) { 
+		$scope.image_src = image_source;
+		$scope.image_title = $scope.track_name;
+	    }
+	    else { 
+		var images = last_played.artist.image; // Otherwise try artist images.
+		var image_source = getBestImageFromArray(images);
+		if (image_source) { 
+		    $scope.image_src = image_source;
+		    $scope.image_title = $scope.track_artist;
+		}
+		else { 
+		    $scope.image_src = 'placeholder.jpg'; 
+		    $scope.image_title = '';
+		}
+	    }
 	    $timeout(getLastfmData, 10000);
 	}).
         error(function(data, status) {
