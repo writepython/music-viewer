@@ -14,3 +14,5 @@ handlers:
 - url: /placeholder.jpg
   static_files: static/placeholder.jpg
   upload: static/placeholder.jpg
+- url: /.*
+  script: data.application
