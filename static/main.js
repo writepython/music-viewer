@@ -2,6 +2,8 @@ var musicApp = angular.module( 'musicApp', [] );
 
 musicApp.controller( 'MusicCtrl', ['$scope', '$http', '$timeout', function($scope, $http, $timeout) {
 
+var get_concert_data = false;
+
 $scope.username = localStorage.getItem("username");
 $scope.realname = localStorage.getItem("realname");
 
@@ -37,19 +39,10 @@ function getBestImageFromArray(images) {
 };
 
 function getConcertData(mbid, track_name) {
-/*    $.ajax({
-        type: "POST", 
-        url:  "/trash/record-geolocation-error/", 
-        data: {error_message: msg},
-        cache: false
-    });
-*/
     var setlist_params = {'mbid': mbid, 'track_name': track_name};
     $http({method: 'POST', url: '/py/setlist/', data: setlist_params}).
 	success(function(data, status) {
-	    //$scope.concert_artist_url = data //artist_url;
-	    var setlist_artist_url = data; //.artist.url;
-	    $scope.x = setlist_artist_url;
+	    $scope.x = data;
 	}).
         error(function(data, status) {
             //$scope.data = 
@@ -87,6 +80,8 @@ function getLastfmData() {
 	    var last_played = data.recenttracks.track[0];
 	    var artist = last_played.artist;
 	    var track_name = last_played.name;
+	    if (track_name == $scope.track_name) { get_concert_data = false }
+	    else { get_concert_data = true }
 	    $scope.track_name = track_name;
 	    $scope.track_artist = artist.name;
 	    $scope.track_album = last_played.album["#text"] || "Unknown";
@@ -108,8 +103,10 @@ function getLastfmData() {
 		    $scope.image_title = '';
 		}
 	    }
-	    var mbid = artist.mbid
-	    getConcertData(mbid, track_name);
+	    if (get_concert_data) {
+		var mbid = artist.mbid;
+		getConcertData(mbid, track_name);
+	    }
 	    $timeout(getLastfmData, 10000);
 	}).
         error(function(data, status) {
