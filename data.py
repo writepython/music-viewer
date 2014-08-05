@@ -1,6 +1,7 @@
 import os, json, datetime
 import requests
 import webapp2
+from operator import itemgetter
 
 artist_setlists_template = 'http://api.setlist.fm/rest/0.1/artist/%s/setlists.json?p=%d'
 
@@ -27,39 +28,19 @@ class SetlistInfo(webapp2.RequestHandler):
             setlist_array = setlist_array + setlists.get('setlist')
 
         total_playcount = 0
-        play_years = []
         year_count_dict = {}
         track_string = "u'%s'" % track_name.lower()
-        for i, setlist in enumerate(setlist_array):
+        for setlist in setlist_array:
             sets = repr(setlist.get('sets')).lower()
             if track_string in sets:
                 total_playcount += 1
                 event_date = setlist.get('@eventDate')
                 event_year =  event_date[event_date.rfind('-')+1:]
-                event_year_int =  int(event_year_string)
-                if not event_year_int in play_years:
-                    
-                    print event_date, "-", i, "-", total_playcount, "-", track_string, " in ", sets
+                year_count_dict[event_year] = year_count_dict.get(event_year, 0) + 1
+        year_count_array = sorted(year_count_dict.items(), key=itemgetter(0), reverse=True)                
                 
         self.response.headers['Content-Type'] = 'application/json'
-        self.response.write( json.dumps({}) )
-        
-        ## template = JINJA_ENVIRONMENT.get_template('index.html')
-        ## self.response.write(template)
-
-## def record_user_location(request):
-##     print "JS request.COOKIES", request.COOKIES
-##     user_id = request.COOKIES.get('u')
-##     if not user_id:
-##         user_id = str( uuid.uuid4() )
-##     print "user_id", user_id
-##     user, created = CookieUser.objects.get_or_create(user_id=user_id)
-##     user.last_known_latitude =  request.POST.get('latitude')
-##     user.last_known_longitude =  request.POST.get('longitude')    
-##     user.save()
-##     print user
-
-##     return HttpResponse('')
+        self.response.write( json.dumps({'total_playcount': total_playcount, 'year_count_array': year_count_array}) )
 
 application = webapp2.WSGIApplication([
     ('/py/setlist/', SetlistInfo),

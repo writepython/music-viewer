@@ -21,10 +21,14 @@
 <h2>{{track_name}}</h2>
 <h2>by {{track_artist}}</h2>
 <h2>from {{track_album}}</h2>
-<h2>:{{x}}</h2>
-<h2>:{{y}}</h2>
-<h3>last.fm status = {{status}}</h3>
-<h3>local time = {{time}}</h3>
+<br>
+<h2><u>Concert Data</u></h2>
+<h2 ng-if="total_playcount">Total Concert Plays: {{total_playcount}}</h2>
+<h2 ng-repeat="year_count in year_count_array">{{year_count[0]}}: {{year_count[1]}}</h2>
+<p>concert data from <a href="http://setlist.fm">setlist.fm</a></p>
+<br>
+<p>last.fm status = {{status}}</p>
+<p>local time = {{time}}</p>
 </div>
 
 </div>

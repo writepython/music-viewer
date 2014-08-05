@@ -42,11 +42,8 @@ function getConcertData(mbid, track_name) {
     var setlist_params = {'mbid': mbid, 'track_name': track_name};
     $http({method: 'POST', url: '/py/setlist/', data: setlist_params}).
 	success(function(data, status) {
-	    $scope.x = data;
-	}).
-        error(function(data, status) {
-            //$scope.data = 
-            $scope.x = data || "Request failed";
+	    $scope.total_playcount = data.total_playcount;
+	    $scope.year_count_array = data.year_count_array;
 	});	    
 };
 
@@ -104,6 +101,8 @@ function getLastfmData() {
 		}
 	    }
 	    if (get_concert_data) {
+		$scope.total_playcount = '';
+		$scope.year_count_array = false;
 		var mbid = artist.mbid;
 		getConcertData(mbid, track_name);
 	    }
